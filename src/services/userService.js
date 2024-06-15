@@ -1,10 +1,9 @@
 import axios from 'axios';
-
-const API_URL = 'http://localhost:5266/api';
+import api from '../lib/api';
 
 export const getUserProfile = async (token) => {
   try {
-    const response = await axios.get(`${API_URL}/user/profile`, {
+    const response = await axios.get(`${api}/user/profile`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -17,7 +16,7 @@ export const getUserProfile = async (token) => {
 
 export const updateUserProfile = async (token, userData) => {
   try {
-    const response = await axios.put(`${API_URL}/user/profile`, userData, {
+    const response = await axios.put(`${api}/user/profile`, userData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -5,7 +5,7 @@ const Home = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to NutriAI!</Text>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DietList')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Diyet Listesi')}>
         <Text style={styles.buttonText}>Show Diet Plans</Text>
       </TouchableOpacity>
     </View>

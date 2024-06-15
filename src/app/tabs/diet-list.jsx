@@ -86,9 +86,7 @@ const DietList = () => {
           </TouchableOpacity>
         )
       ) : (
-        <TouchableOpacity style={styles.button} onPress={() => setShowDietPlans(true)}>
-          <Text style={styles.buttonText}>Show Diet Plans</Text>
-        </TouchableOpacity>
+        setShowDietPlans(true)
       )}
       <View style={styles.totalRow}>
         <Text style={styles.totalText}>Günlük Kalori Alımı</Text>

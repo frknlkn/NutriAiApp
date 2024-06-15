@@ -3,12 +3,12 @@ import * as SecureStore from 'expo-secure-store';
 
 // API Base URL
 const api = axios.create({
-  baseURL: 'http://localhost:5266/api',
+  baseURL: 'https://api-nutriai.azurewebsites.net/api',
 });
 
 // Web ve Mobil için token saklama fonksiyonları
 const setToken = async (token) => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && window.localStorage)  {
     // Web ortamı
     localStorage.setItem('jwt_token', token);
   } else {
@@ -18,7 +18,7 @@ const setToken = async (token) => {
 };
 
 export const getToken = async () => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && window.localStorage)  {
     // Web ortamı
     return localStorage.getItem('jwt_token');
   } else {
@@ -28,7 +28,7 @@ export const getToken = async () => {
 };
 
 const removeToken = async () => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && window.localStorage)  {
     // Web ortamı
     localStorage.removeItem('jwt_token');
   } else {
@@ -59,6 +59,25 @@ export const register = async (userData) => {
     return response.data;
   } catch (error) {
     console.error('Error registering:', error);
+    throw error;
+  }
+};
+
+// Profil alma fonksiyonu
+export const getProfile = async () => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const response = await api.get('/user/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching profile:', error);
     throw error;
   }
 };

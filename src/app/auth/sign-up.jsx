@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
 import { register } from '../../services/authService';
 
 const SignUp = ({ navigation }) => {
@@ -17,8 +18,14 @@ const SignUp = ({ navigation }) => {
     password: ''
   });
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
 
   const handleRegister = async () => {
+    if (!validateEmail(userData.email)) {
+      setEmailError('Doğru formatta yazın');
+      return;
+    }
+    setEmailError('');
     try {
       await register(userData);
       navigation.navigate('SignIn');
@@ -27,88 +34,141 @@ const SignUp = ({ navigation }) => {
     }
   };
 
+  const validateEmail = (email) => {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  };
+
+  const handleChange = (key, value) => {
+    if (key === 'age' || key === 'height' || key === 'weight') {
+      value = value.replace(/[^0-9]/g, '');
+    }
+    setUserData({ ...userData, [key]: value });
+  };
+
+  const genderData = [
+    { label: 'Kadın', value: 'Kadın' },
+    { label: 'Erkek', value: 'Erkek' },
+  ];
+
+  const activityLevelData = [
+    { label: 'Düşük', value: 'Düşük' },
+    { label: 'Orta', value: 'Orta' },
+    { label: 'Yüksek', value: 'Yüksek' },
+  ];
+
+  const goalData = [
+    { label: 'Kilo Vermek', value: 'Kilo Vermek' },
+    { label: 'Kilo Almak', value: 'Kilo Almak' },
+    { label: 'Korumak', value: 'Korumak' },
+  ];
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Create an Account</Text>
-      <TextInput
-        placeholder="Username"
-        value={userData.username}
-        onChangeText={(text) => setUserData({ ...userData, username: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Email"
-        value={userData.email}
-        onChangeText={(text) => setUserData({ ...userData, email: text })}
-        style={styles.input}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        placeholder="First Name"
-        value={userData.firstName}
-        onChangeText={(text) => setUserData({ ...userData, firstName: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Last Name"
-        value={userData.lastName}
-        onChangeText={(text) => setUserData({ ...userData, lastName: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Age"
-        value={userData.age}
-        onChangeText={(text) => setUserData({ ...userData, age: text })}
-        style={styles.input}
-        keyboardType="numeric"
-      />
-      <TextInput
-        placeholder="Gender"
-        value={userData.gender}
-        onChangeText={(text) => setUserData({ ...userData, gender: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Height (cm)"
-        value={userData.height}
-        onChangeText={(text) => setUserData({ ...userData, height: text })}
-        style={styles.input}
-        keyboardType="numeric"
-      />
-      <TextInput
-        placeholder="Weight (kg)"
-        value={userData.weight}
-        onChangeText={(text) => setUserData({ ...userData, weight: text })}
-        style={styles.input}
-        keyboardType="numeric"
-      />
-      <TextInput
-        placeholder="Activity Level"
-        value={userData.activityLevel}
-        onChangeText={(text) => setUserData({ ...userData, activityLevel: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Goal"
-        value={userData.goal}
-        onChangeText={(text) => setUserData({ ...userData, goal: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Password"
-        value={userData.password}
-        onChangeText={(text) => setUserData({ ...userData, password: text })}
-        secureTextEntry
-        style={styles.input}
-      />
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Register</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-        <Text style={styles.loginText}>Already have an account? Sign In</Text>
-      </TouchableOpacity>
+      <Text style={styles.title}>Merhaba,</Text>
+      <View style={styles.formContainer}>
+        <View style={styles.tabContainer}>
+          <TouchableOpacity style={styles.tabInactive} onPress={() => navigation.navigate('SignIn')}>
+            <Text style={styles.tabTextInactive}>Giriş Yap</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabActive}>
+            <Text style={styles.tabTextActive}>Üye Ol</Text>
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          placeholder="Kullanıcı Adı"
+          value={userData.username}
+          onChangeText={(text) => handleChange('username', text)}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="E-Mail"
+          value={userData.email}
+          onChangeText={(text) => handleChange('email', text)}
+          style={[styles.input, emailError && styles.inputError]}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          onBlur={() => {
+            if (!validateEmail(userData.email)) {
+              setEmailError('Doğru formatta yazın');
+            } else {
+              setEmailError('');
+            }
+          }}
+        />
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+        <TextInput
+          placeholder="Ad"
+          value={userData.firstName}
+          onChangeText={(text) => handleChange('firstName', text)}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Soyad"
+          value={userData.lastName}
+          onChangeText={(text) => handleChange('lastName', text)}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Yaş"
+          value={userData.age}
+          onChangeText={(text) => handleChange('age', text)}
+          style={styles.input}
+          keyboardType="numeric"
+        />
+        <Dropdown
+          style={styles.dropdown}
+          data={genderData}
+          labelField="label"
+          valueField="value"
+          placeholder="Cinsiyet Seçin"
+          value={userData.gender}
+          onChange={(item) => handleChange('gender', item.value)}
+        />
+        <TextInput
+          placeholder="Boy (cm)"
+          value={userData.height}
+          onChangeText={(text) => handleChange('height', text)}
+          style={styles.input}
+          keyboardType="numeric"
+        />
+        <TextInput
+          placeholder="Kilo (kg)"
+          value={userData.weight}
+          onChangeText={(text) => handleChange('weight', text)}
+          style={styles.input}
+          keyboardType="numeric"
+        />
+        <Dropdown
+          style={styles.dropdown}
+          data={activityLevelData}
+          labelField="label"
+          valueField="value"
+          placeholder="Günlük Aktivite Seviyesi Seçin"
+          value={userData.activityLevel}
+          onChange={(item) => handleChange('activityLevel', item.value)}
+        />
+        <Dropdown
+          style={styles.dropdown}
+          data={goalData}
+          labelField="label"
+          valueField="value"
+          placeholder="Hedef Seçin"
+          value={userData.goal}
+          onChange={(item) => handleChange('goal', item.value)}
+        />
+        <TextInput
+          placeholder="Şifre"
+          value={userData.password}
+          onChangeText={(text) => handleChange('password', text)}
+          secureTextEntry
+          style={styles.input}
+        />
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>KAYIT OL</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -121,11 +181,44 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
     textAlign: 'center',
+    marginBottom: 20,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  tabActive: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#FF6600',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  tabInactive: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  tabTextActive: {
+    color: '#FF6600',
+    fontWeight: 'bold',
+  },
+  tabTextInactive: {
+    color: '#888',
+  },
+  formContainer: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
   input: {
     height: 50,
@@ -136,12 +229,24 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#fff',
   },
+  inputError: {
+    borderColor: 'red',
+  },
+  dropdown: {
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    backgroundColor: '#fff',
+  },
   button: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#FF6600',
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   buttonText: {
     color: '#fff',
@@ -149,7 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   loginText: {
-    color: '#0066cc',
+    color: '#FF6600',
     textAlign: 'center',
     marginTop: 20,
   },

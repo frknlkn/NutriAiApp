@@ -3,7 +3,7 @@ import { getToken } from '../services/authService';
 
 
 const api = axios.create({
-  baseURL: 'http://localhost:5266/api',
+  baseURL: 'https://api-nutriai.azurewebsites.net/api',
 });
 
 api.interceptors.request.use(
